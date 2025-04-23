@@ -3,29 +3,59 @@ name: Node.js CI
 on:
   push:
     branches:
+      - main
       - master
+      - 'feature/**'
+      - 'react-18'
   pull_request:
     branches:
-      - master
+      - '**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [16.x]
+
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js
+
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: '14.x'
+          node-version: ${{ matrix.node-version }}
           cache: 'yarn'
-      - run: yarn --frozen-lockfile
-      - run: yarn build:lib || yarn build:lib
-      #- run: yarn run lint
-      #- run: yarn run test
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Run tests
+        run: yarn test
+
+      - name: Build packages
+        run: yarn build:lib
+
+  release:
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
       - name: semantic release
         env:
           GH_TOKEN_DOCS: ${{ secrets.GH_TOKEN_DOCS }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: 'echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc && yarn run semantic-release'
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          yarn semantic-release
