@@ -42,6 +42,22 @@ function Bool(props: BoolFieldProps) {
   const SelectionControl =
     appearance === 'checkbox' || appearance === undefined ? Checkbox : Switch;
 
+  const commonProps = {
+    checked: !!value,
+    name,
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+      !disabled && !readOnly && onChange && onChange(event.target.checked),
+    ref: inputRef as Ref<HTMLButtonElement>,
+    value: name,
+    ...omit(filterDOMProps(props), ['helperText', 'fullWidth', 'size']),
+  };
+
+  // Add size only if it's Checkbox
+  const controlProps =
+    appearance === 'checkbox'
+      ? { ...commonProps, size: 'large' as 'small' | 'medium' } //Type-safe cast
+      : commonProps;
+
   return wrapField(
     { fullWidth: true, ...props },
     legend && (
@@ -51,21 +67,7 @@ function Bool(props: BoolFieldProps) {
     ),
     <FormGroup>
       <FormControlLabel
-        control={
-          <SelectionControl
-            checked={!!value}
-            name={name}
-            onChange={(event) =>
-              !disabled &&
-              !readOnly &&
-              onChange &&
-              onChange(event.target.checked)
-            }
-            ref={inputRef as Ref<HTMLButtonElement>}
-            value={name}
-            {...omit(filterDOMProps(props), ['helperText', 'fullWidth'])}
-          />
-        }
+        control={<SelectionControl {...controlProps} />}
         label={transform ? transform(label as string) : label}
       />
     </FormGroup>

@@ -49,7 +49,7 @@ type CellOld = NodeBase & {
   hasInlineNeighbour?: string;
 };
 
-type RowOld = NodeBase & {
+export type RowOld = NodeBase & {
   cells: CellOld[];
 };
 

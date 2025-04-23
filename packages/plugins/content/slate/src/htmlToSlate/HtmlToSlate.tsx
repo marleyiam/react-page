@@ -34,6 +34,7 @@ const HtmlToSlate = ({ plugins }: { plugins: SlatePlugin[] }) => {
         p.deserialize?.tagName === nodeName.toLowerCase()
       );
     });
+
     if (matchingPlugin && matchingPlugin.pluginType === 'component') {
       const elHtml = el as HTMLElement;
       if (!elHtml.style) {
@@ -60,7 +61,6 @@ const HtmlToSlate = ({ plugins }: { plugins: SlatePlugin[] }) => {
         return jsx('element', attrs, children);
       }
     }
-
     return children;
   };
 
@@ -72,9 +72,11 @@ const HtmlToSlate = ({ plugins }: { plugins: SlatePlugin[] }) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ) as unknown as any[];
     const nodes = Array.isArray(fragment) ? fragment : [fragment];
-    // filter empty nodes (that contain only text)
+    // filter empty nodes (that contain only text), if node has no text you shall return it as it is
     return {
-      slate: nodes.filter((n) => n.text?.trim() !== '' ?? true),
+      slate: nodes.filter((n) => {
+        return n.text == undefined ? n : (n.text?.trim() || '') !== '';
+      }),
     };
   };
 };

@@ -1,4 +1,4 @@
-import { render } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 import type { CellPlugin } from '../../core/types';
 import { HTMLRenderer } from '../HTMLRenderer';
@@ -8,6 +8,22 @@ jest.mock('react', () => {
 
   return { ...r, memo: (x) => x };
 });
+
+const normalize = (html: string) =>
+  html
+    .replace(/\s+/g, ' ') // collapse whitespace
+    .replace(/;\s*/g, ';') // remove extra spaces after ;
+    .replace(/:\s*/g, ':') // remove extra spaces after :
+    .replace(/style="([^"]*)"/g, (_, styles) => {
+      const normalized = styles
+        .split(';')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .sort()
+        .join(';');
+      return `style="${normalized}"`;
+    })
+    .trim();
 
 const somePlugin: CellPlugin<{ text: string }> = {
   id: 'somePlugin',
@@ -48,14 +64,20 @@ describe('HTMLRenderer', () => {
       },
     ].forEach((c, k) => {
       describe(`case ${k}`, () => {
-        const wrapper = render(
+        const { container } = render(
           <HTMLRenderer value={c} cellPlugins={cellPlugins} />
         );
+
+        const actual = normalize(
+          container.querySelector('.react-page-row')?.outerHTML ?? ''
+        );
+
+        const expected = normalize(
+          `<div class="react-page-row"><div class="react-page-cell react-page-cell-sm-12 react-page-cell-xs-12 react-page-cell-leaf"><div class="react-page-cell-inner react-page-cell-inner-leaf some-class"><div style="display:flex;flex-direction:column;height:100%"><p>Hello world</p></div></div></div></div>`
+        );
+
         it('should pass', () => {
-          expect(wrapper.html()).toEqual(
-            // tslint:disable-next-line:max-line-length
-            '<div class="react-page-row"><div class="react-page-cell react-page-cell-sm-12 react-page-cell-xs-12 react-page-cell-leaf"><div class="react-page-cell-inner react-page-cell-inner-leaf some-class"><div style="display:flex;flex-direction:column;height:100%"><p>Hello world</p></div></div></div></div>'
-          );
+          expect(actual).toEqual(expected);
         });
       });
     });

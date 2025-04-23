@@ -44,6 +44,7 @@ type SelectProps = FieldProps<
   MaterialSelectProps & TextFieldProps,
   SelectFieldCommonProps & {
     checkboxes?: false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     labelProps?: any;
     native?: boolean;
     textFieldProps?: Omit<TextFieldProps, 'value'>;
@@ -100,7 +101,11 @@ function Select(props: SelectFieldProps) {
           {allowedValues!.map((item) => (
             <FormControlLabel
               control={
-                <Radio id={`${id}-${escape(item)}`} {...filteredProps} />
+                <Radio
+                  id={`${id}-${escape(item)}`}
+                  size={props.size}
+                  {...omit(filteredProps, ['size'])}
+                />
               }
               disabled={props.disableItem?.(item) || disabled}
               key={item}
@@ -118,12 +123,14 @@ function Select(props: SelectFieldProps) {
                   checked={value.includes(item)}
                   id={`${id}-${escape(item)}`}
                   name={name}
+                  size={props.size}
                   onChange={() =>
                     disabled || readOnly || onChange(xor([item], value))
                   }
                   ref={inputRef}
                   value={name}
                   {...filteredProps}
+                  {...omit(filteredProps, ['size'])}
                 />
               }
               disabled={props.disableItem?.(item) || disabled}

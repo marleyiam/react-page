@@ -4,7 +4,14 @@ import ListItem from '@mui/material/ListItem';
 import ListSubheader from '@mui/material/ListSubheader';
 import TextField from '@mui/material/TextField';
 import React from 'react';
-import { Portal } from 'react-portal';
+//import { Portal } from 'react-portal';
+import { Portal as RawPortal } from 'react-portal';
+// eslint-disable-next-line prettier/prettier
+const PortalWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  // eslint-disable-next-line prettier/prettier
+  React.createElement(RawPortal, null, children)
+);
+
 import {
   useIsInsertMode,
   useUiTranslator,
@@ -85,7 +92,7 @@ export const PluginDrawer: React.FC = React.memo(() => {
   const filteredPlugins = plugins.filter(searchFilter);
 
   return (
-    <Portal>
+    <PortalWrapper>
       <Drawer
         variant="persistent"
         className="react-page-plugin-drawer"
@@ -132,6 +139,6 @@ export const PluginDrawer: React.FC = React.memo(() => {
           </List>
         )}
       </Drawer>
-    </Portal>
+    </PortalWrapper>
   );
 });

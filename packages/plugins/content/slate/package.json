@@ -23,8 +23,8 @@
   "peerDependencies": {
     "@mui/material": "*",
     "@types/react": "*",
-    "react": ">= 16.14",
-    "react-dom": ">= 16.14"
+    "react": ">=18.2.0",
+    "react-dom": ">=18.2.0"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.2.0",
@@ -59,7 +59,7 @@
     "@types/xmldom": "^0.1.31"
   },
   "browser": {
-    "./lib/HtmlToSlate/parseHtml.js": "./lib/HtmlToSlate/parseHtml.browser.js",
-    "./lib-es/HtmlToSlate/parseHtml.js": "./lib-es/HtmlToSlate/parseHtml.browser.js"
+    "./lib-es/HtmlToSlate/parseHtml.js": "./lib-es/HtmlToSlate/parseHtml.browser.js",
+    "./lib/HtmlToSlate/parseHtml.js": "./lib/HtmlToSlate/parseHtml.browser.js"
   }
 }

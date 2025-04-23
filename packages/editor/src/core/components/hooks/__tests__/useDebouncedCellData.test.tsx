@@ -46,7 +46,7 @@ const theState = initialState(
 );
 
 describe('useDebouncedCellData', () => {
-  it("updates don't overwrite each other", (done) => {
+  it("updates don't overwrite each other", async () => {
     const store = createStore(theState);
     const Component: React.FC<unknown> = () => {
       const [, setData] = useDebouncedCellData('cell0');
@@ -63,21 +63,23 @@ describe('useDebouncedCellData', () => {
       </ReduxProvider>
     );
 
-    setTimeout(() => {
-      const data = getCellData(
-        findNodeInState(store.getState(), 'cell0')?.node as Cell,
-        options.lang
-      );
-      expect(data).toMatchObject({ a: 1, b: 1 });
-      done();
-    }, 300);
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 300)); // Wait for debounce
+    });
+
+    const data = getCellData(
+      findNodeInState(store.getState(), 'cell0')?.node as Cell,
+      options.lang
+    );
+
+    expect(data).toMatchObject({ a: 1, b: 1 });
   });
 
   /*
 
   this test fails. We had to change the behaviour of useDebouncedCellData to not cancel pending updates
   the problem is that it was hard to get the timing right on normal cases (where no exteranl changes happen)
-  
+
   it('handles outside changes correctly', (done) => {
     const store = createStore(theState);
     const Component: React.FC<unknown> = () => {
@@ -117,34 +119,32 @@ describe('useDebouncedCellData', () => {
   });
 
   */
-  it('returns a referentially stable callback', (done) => {
+  it('returns a referentially stable callback', () => {
     const store = createStore(theState);
-    const Component: React.FC<unknown> = () => {
+    const ref = { current: undefined as unknown };
+
+    const Component: React.FC<{ step: number }> = ({ step }) => {
       const [, setData] = useDebouncedCellData('cell0');
 
-      const ref = React.useRef(setData);
-      expect(ref.current).toBe(setData);
-
-      React.useEffect(() => {
-        setData({ a: 1 }, {});
-      }, []);
+      if (step === 1) {
+        ref.current = setData;
+      } else {
+        expect(ref.current).toBe(setData);
+      }
 
       return <div />;
     };
 
-    render(
+    const { rerender } = render(
       <ReduxProvider store={store}>
-        <Component />
+        <Component step={1} />
       </ReduxProvider>
     );
 
-    setTimeout(() => {
-      const data = getCellData(
-        findNodeInState(store.getState(), 'cell0')?.node as Cell,
-        options.lang
-      );
-      expect(data).toMatchObject({ a: 1 });
-      done();
-    }, 300);
+    rerender(
+      <ReduxProvider store={store}>
+        <Component step={2} />
+      </ReduxProvider>
+    );
   });
 });

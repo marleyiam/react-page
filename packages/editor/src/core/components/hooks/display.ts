@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from '../../reduxConnect';
 import { setZoom } from '../../actions/display';
 import { useOption } from './options';
+import type { RootState } from '../../reduxConnect';
 
 export const useSetZoom = () => {
   const dispatch = useDispatch();
@@ -13,7 +14,7 @@ export const useSetZoom = () => {
  * @returns the current zoom
  */
 export const useZoom = () => {
-  return useSelector((state) => state.reactPage.display.zoom);
+  return useSelector((state: RootState) => state.reactPage.display.zoom);
 };
 
 export const useZoomOut = () => {

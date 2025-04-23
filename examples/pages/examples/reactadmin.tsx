@@ -7,7 +7,7 @@ import {
   CardContent,
   Typography,
 } from '@mui/material';
-import type { Record as RecordType } from 'ra-core';
+//import type { Record as RecordType } from 'ra-core';
 import type { CellPlugin } from '@react-page/editor';
 import slate, {
   DEFAULT_SLATE_PLUGIN_ID,
@@ -157,11 +157,18 @@ const ProductIdSelector = (props: any) => (
   />
 );
 
+type Product = {
+  id: string;
+  title: string;
+  imageUrl: string;
+  teaserText: string;
+};
+
 const ProductTeaser: React.FC<{ productId: string }> = ({ productId }) => {
   // this component would live in your frontend
   // you won't load data from admin here, but from the public frontend api
   // for this example, we use the dataprovider, but in real-live-applications, that would not be the case
-  const [product, setProduct] = useState<RecordType | null>(null);
+  const [product, setProduct] = useState<Record<string, string> | null>(null);
   useEffect(() => {
     dataProvider
       .getOne('products', { id: productId })
@@ -250,7 +257,7 @@ const PostList = (props: any) => {
 
 export const PostEdit = (props: any) => (
   <Edit title="Edit a Post" {...props}>
-    <SimpleForm label="summary">
+    <SimpleForm>
       <TextInput disabled source="id" />
       <TextInput source="title" />
       <RaReactPageInput
@@ -264,7 +271,7 @@ export const PostEdit = (props: any) => (
 
 export const PostCreate = (props: any) => (
   <Create title="Create a Post" {...props}>
-    <SimpleForm label="summary">
+    <SimpleForm>
       <TextInput source="id" />
       <TextInput source="title" />
     </SimpleForm>
@@ -293,7 +300,7 @@ const ProductList = (props: any) => {
 
 export const ProductEdit = (props: any) => (
   <Edit title="Edit a Product" {...props}>
-    <SimpleForm label="summary">
+    <SimpleForm>
       <TextInput disabled source="id" />
       <TextInput source="title" />
       <TextInput multiline source="teaserText" />
@@ -304,7 +311,7 @@ export const ProductEdit = (props: any) => (
 
 export const ProductCreate = (props: any) => (
   <Create title="Create a Product" {...props}>
-    <SimpleForm label="summary">
+    <SimpleForm>
       <TextInput source="id" />
       <TextInput source="title" />
       <TextInput multiline source="teaserText" />

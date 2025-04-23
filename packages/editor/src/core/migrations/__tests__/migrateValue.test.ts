@@ -1,7 +1,7 @@
 import type { Value } from '../../types';
 import { createId } from '../../utils/createId';
 import { CURRENT_EDITABLE_VERSION } from '../EDITABLE_MIGRATIONS';
-import type { Value_v0 } from '../EDITABLE_MIGRATIONS/from0to1';
+import type { Value_v0, RowOld } from '../EDITABLE_MIGRATIONS/from0to1';
 import { migrateValue } from '../migrate';
 
 jest.mock('../../utils/createId', () => {
@@ -13,33 +13,36 @@ jest.mock('../../utils/createId', () => {
 
 describe('migrateValue', () => {
   it('migrates unversioned state to latest state (1)', () => {
+    const rows = [
+      {
+        id: 'row1',
+        cells: [
+          {
+            id: 'cell2',
+            content: {
+              plugin: {
+                name: 'fooplugin',
+                version: '0.0.1',
+              },
+              state: {
+                fooState: 'something',
+              },
+            },
+          },
+        ],
+      },
+    ] as RowOld[];
+
     const oldEditable: Value_v0 = {
       id: 'editableId',
       cells: [
         {
           id: 'cell1',
-          rows: [
-            {
-              id: 'row1',
-              cells: [
-                {
-                  id: 'cell2',
-                  content: {
-                    plugin: {
-                      name: 'fooplugin',
-                      version: '0.0.1',
-                    },
-                    state: {
-                      fooState: 'something',
-                    },
-                  },
-                },
-              ],
-            },
-          ],
+          rows: rows,
         },
       ],
     };
+
     const newEditable = migrateValue(oldEditable, {
       lang: 'en',
       cellPlugins: [],

@@ -5,6 +5,7 @@ import makeSlatePluginsFromDef from '../utils/makeSlatePluginsFromDef';
 const htmlToSlate = HtmlToSlate({
   plugins: makeSlatePluginsFromDef(defaultPlugins),
 });
+
 describe('HtmlToSlate', () => {
   it('parses h1 tags', async () => {
     expect(await htmlToSlate('<h1>Projects</h1>')).toEqual({

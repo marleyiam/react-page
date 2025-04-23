@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useCallback } from 'react';
 import type { DisplayModes } from '../../actions/display';
 import {
@@ -17,6 +18,7 @@ import {
   isPreviewMode,
   isResizeMode,
 } from '../../selector/display';
+import type { RootState } from '../../reduxConnect';
 
 /**
  * @returns true whether the editor is in edit mode
@@ -56,7 +58,7 @@ export const useIsResizeMode = () => {
  * @returns the current display mode
  */
 export const useDisplayMode = () => {
-  return useSelector((state) => state.reactPage.display.mode);
+  return useSelector((state: RootState) => state.reactPage.display.mode);
 };
 
 /**
@@ -66,7 +68,7 @@ export const useDisplayMode = () => {
  *
  */
 export const useDisplayModeReferenceNodeId = () => {
-  return useSelector((state) => state.reactPage?.display?.referenceNodeId);
+  return useSelector((state: RootState) => state.reactPage?.display?.referenceNodeId);
 };
 
 /**
